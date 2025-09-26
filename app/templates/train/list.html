@@ -64,66 +64,138 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fonction pour mettre à jour les destinations
     function updateDestinations() {
         const sourceStation = sourceSelect.value;
+        const currentDestinationValue = destinationSelect.value; // Sauvegarder la valeur actuelle
+        
         if (sourceStation) {
             fetch(`/train/api/available-destinations?source_station=${encodeURIComponent(sourceStation)}`)
-                .then(response => response.json())
-                .then(data => {
-                    destinationSelect.innerHTML = '<option value="">Toutes les gares</option>';
-                    data.forEach(station => {
-                        const option = document.createElement('option');
-                        option.value = station.destination_station_name;
-                        option.textContent = station.destination_station_name;
-                        destinationSelect.appendChild(option);
-                    });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau');
+                    }
+                    return response.json();
                 })
-                .catch(error => console.error('Erreur:', error));
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        destinationSelect.innerHTML = '<option value="">Toutes les gares</option>';
+                        data.forEach(station => {
+                            if (station && station.destination_station_name) {
+                                const option = document.createElement('option');
+                                option.value = station.destination_station_name;
+                                option.textContent = station.destination_station_name;
+                                destinationSelect.appendChild(option);
+                            }
+                        });
+                        
+                        // Restaurer la valeur précédente si elle existe dans les nouvelles options
+                        if (currentDestinationValue && data.some(station => station.destination_station_name === currentDestinationValue)) {
+                            destinationSelect.value = currentDestinationValue;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des destinations:', error);
+                    // En cas d'erreur, garder les options actuelles
+                });
         } else {
             // Réinitialiser avec toutes les gares
             fetch('/train/api/available-destinations')
-                .then(response => response.json())
-                .then(data => {
-                    destinationSelect.innerHTML = '<option value="">Toutes les gares</option>';
-                    data.forEach(station => {
-                        const option = document.createElement('option');
-                        option.value = station.destination_station_name;
-                        option.textContent = station.destination_station_name;
-                        destinationSelect.appendChild(option);
-                    });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau');
+                    }
+                    return response.json();
                 })
-                .catch(error => console.error('Erreur:', error));
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        destinationSelect.innerHTML = '<option value="">Toutes les gares</option>';
+                        data.forEach(station => {
+                            if (station && station.destination_station_name) {
+                                const option = document.createElement('option');
+                                option.value = station.destination_station_name;
+                                option.textContent = station.destination_station_name;
+                                destinationSelect.appendChild(option);
+                            }
+                        });
+                        
+                        // Restaurer la valeur précédente si elle existe
+                        if (currentDestinationValue && data.some(station => station.destination_station_name === currentDestinationValue)) {
+                            destinationSelect.value = currentDestinationValue;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des destinations:', error);
+                    // En cas d'erreur, garder les options actuelles
+                });
         }
     }
     
     // Fonction pour mettre à jour les sources
     function updateSources() {
         const destinationStation = destinationSelect.value;
+        const currentSourceValue = sourceSelect.value; // Sauvegarder la valeur actuelle
+        
         if (destinationStation) {
             fetch(`/train/api/available-sources?destination_station=${encodeURIComponent(destinationStation)}`)
-                .then(response => response.json())
-                .then(data => {
-                    sourceSelect.innerHTML = '<option value="">Toutes les gares</option>';
-                    data.forEach(station => {
-                        const option = document.createElement('option');
-                        option.value = station.source_station_name;
-                        option.textContent = station.source_station_name;
-                        sourceSelect.appendChild(option);
-                    });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau');
+                    }
+                    return response.json();
                 })
-                .catch(error => console.error('Erreur:', error));
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        sourceSelect.innerHTML = '<option value="">Toutes les gares</option>';
+                        data.forEach(station => {
+                            if (station && station.source_station_name) {
+                                const option = document.createElement('option');
+                                option.value = station.source_station_name;
+                                option.textContent = station.source_station_name;
+                                sourceSelect.appendChild(option);
+                            }
+                        });
+                        
+                        // Restaurer la valeur précédente si elle existe dans les nouvelles options
+                        if (currentSourceValue && data.some(station => station.source_station_name === currentSourceValue)) {
+                            sourceSelect.value = currentSourceValue;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des sources:', error);
+                    // En cas d'erreur, garder les options actuelles
+                });
         } else {
             // Réinitialiser avec toutes les gares
             fetch('/train/api/available-sources')
-                .then(response => response.json())
-                .then(data => {
-                    sourceSelect.innerHTML = '<option value="">Toutes les gares</option>';
-                    data.forEach(station => {
-                        const option = document.createElement('option');
-                        option.value = station.source_station_name;
-                        option.textContent = station.source_station_name;
-                        sourceSelect.appendChild(option);
-                    });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau');
+                    }
+                    return response.json();
                 })
-                .catch(error => console.error('Erreur:', error));
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        sourceSelect.innerHTML = '<option value="">Toutes les gares</option>';
+                        data.forEach(station => {
+                            if (station && station.source_station_name) {
+                                const option = document.createElement('option');
+                                option.value = station.source_station_name;
+                                option.textContent = station.source_station_name;
+                                sourceSelect.appendChild(option);
+                            }
+                        });
+                        
+                        // Restaurer la valeur précédente si elle existe
+                        if (currentSourceValue && data.some(station => station.source_station_name === currentSourceValue)) {
+                            sourceSelect.value = currentSourceValue;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des sources:', error);
+                    // En cas d'erreur, garder les options actuelles
+                });
         }
     }
     

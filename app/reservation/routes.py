@@ -89,10 +89,20 @@ def cancel_reservation(reservation_id):
 def get_available_destinations():
     """API endpoint pour récupérer les gares d'arrivée disponibles pour une gare de départ donnée"""
     source_station = request.args.get('source_station')
-    if not source_station:
-        return jsonify([])
-    
     db_queries = DatabaseQueries()
+    
+    if not source_station:
+        # Si aucune gare de départ n'est spécifiée, retourner toutes les gares d'arrivée
+        destinations = db_queries.get_unique_stations()
+        # Filtrer pour ne garder que les gares d'arrivée
+        arrival_stations = []
+        for station in destinations:
+            arrival_stations.append({
+                'destination_station_name': station['station_name'],
+                'destination_station_code': station['station_code']
+            })
+        return jsonify(arrival_stations)
+    
     destinations = db_queries.get_available_destinations(source_station)
     return jsonify(destinations)
 
@@ -100,9 +110,19 @@ def get_available_destinations():
 def get_available_sources():
     """API endpoint pour récupérer les gares de départ disponibles pour une gare d'arrivée donnée"""
     destination_station = request.args.get('destination_station')
-    if not destination_station:
-        return jsonify([])
-    
     db_queries = DatabaseQueries()
+    
+    if not destination_station:
+        # Si aucune gare d'arrivée n'est spécifiée, retourner toutes les gares de départ
+        sources = db_queries.get_unique_stations()
+        # Filtrer pour ne garder que les gares de départ
+        departure_stations = []
+        for station in sources:
+            departure_stations.append({
+                'source_station_name': station['station_name'],
+                'source_station_code': station['station_code']
+            })
+        return jsonify(departure_stations)
+    
     sources = db_queries.get_available_sources(destination_station)
     return jsonify(sources)
