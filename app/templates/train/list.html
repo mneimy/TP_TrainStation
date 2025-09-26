@@ -84,6 +84,7 @@
                     <a href="{{ url_for('train.view_train', train_id=train.id_train) }}" class="btn btn-outline-primary btn-sm">Voir</a>
                     <a href="{{ url_for('train.edit_train', train_id=train.id_train) }}" class="btn btn-outline-secondary btn-sm">Modifier</a>
                     <form method="POST" action="{{ url_for('train.delete_train', train_id=train.id_train) }}" class="d-inline">
+                        {{ csrf_token() }}
                         <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce train ?')">Supprimer</button>
                     </form>
                 </div>
