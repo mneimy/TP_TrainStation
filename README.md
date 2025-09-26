@@ -300,6 +300,9 @@ TP-TrainStation/
 │   ├── Creation_script.sql     # Script de création des tables
 │   ├── queries.sql             # Requêtes SQL sécurisées
 │   └── README.md               # Guide de configuration de la base de données
+├── data/                       # Données de l'application
+│   ├── Train_details.csv       # Base de données des trains
+│   └── README.md               # Documentation des données
 ├── app.py                      # Point d'entrée
 ├── .env                        # Variables d'environnement personnelles (ignoré par Git)
 ├── .gitignore                  # Fichiers à ignorer par Git

@@ -97,9 +97,10 @@ docs/_build/
 site/
 
 # Fichiers de données sensibles
-data/
+# data/  # Commenté pour permettre l'ajout des données de trains
 datasets/
-*.csv
+# *.csv  # Commenté pour permettre l'ajout des données de trains
+!data/*.csv  # Permettre les fichiers CSV dans le répertoire data
 *.json
 *.xml
 
