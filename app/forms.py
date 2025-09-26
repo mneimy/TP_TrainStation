@@ -23,6 +23,18 @@ class ReservationForm(FlaskForm):
     train_id = SelectField('Sélectionner un train', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Réserver')
 
+class TrainSearchForm(FlaskForm):
+    source_station = SelectField('Gare de départ', coerce=str, validators=[DataRequired()])
+    destination_station = SelectField('Gare d\'arrivée', coerce=str, validators=[DataRequired()])
+    departure_time = SelectField('Heure de départ', coerce=str, validators=[Optional()])
+    submit = SubmitField('Chercher des trains')
+
+class ReservationSearchForm(FlaskForm):
+    source_station = SelectField('Gare de départ', coerce=str, validators=[DataRequired()])
+    destination_station = SelectField('Gare d\'arrivée', coerce=str, validators=[DataRequired()])
+    departure_time = SelectField('Heure de départ', coerce=str, validators=[Optional()])
+    submit = SubmitField('Chercher des trajets')
+
 class LoginForm(FlaskForm):
     nom = StringField('Nom', validators=[DataRequired()])
     prenom = StringField('Prénom', validators=[DataRequired()])

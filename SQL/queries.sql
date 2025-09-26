@@ -273,6 +273,38 @@ AND (t.source_station_name ILIKE %s OR %s IS NULL)
 AND (t.destination_station_name ILIKE %s OR %s IS NULL)
 ORDER BY t.departure_time;
 
+-- name: search_trains_by_criteria
+-- Recherche de trains par critères de recherche
+-- Paramètres: source_station_name, destination_station_name, departure_time
+SELECT DISTINCT t.id_train, t.train_number, t.source_station_name, t.destination_station_name, 
+       t.departure_time, t.arrival_time, t.distance
+FROM train t
+WHERE t.source_station_name ILIKE %s
+  AND t.destination_station_name ILIKE %s
+  AND (t.departure_time::text LIKE %s OR %s IS NULL)
+ORDER BY t.departure_time;
+
+-- name: get_unique_stations
+-- Récupère toutes les gares uniques (départ et arrivée)
+SELECT DISTINCT station_name, station_code
+FROM (
+    SELECT source_station_name as station_name, source_station_code as station_code
+    FROM train
+    WHERE source_station_name IS NOT NULL
+    UNION
+    SELECT destination_station_name as station_name, destination_station_code as station_code
+    FROM train
+    WHERE destination_station_name IS NOT NULL
+) stations
+ORDER BY station_name;
+
+-- name: get_departure_times
+-- Récupère tous les horaires de départ uniques
+SELECT DISTINCT departure_time
+FROM train
+WHERE departure_time IS NOT NULL
+ORDER BY departure_time;
+
 -- ===========================================
 -- REQUÊTES DE MAINTENANCE
 -- ===========================================

@@ -225,84 +225,39 @@ class DatabaseQueries:
     
     def get_user_reservations(self, user_id):
         """Récupère les réservations d'un utilisateur"""
-        conn = self.get_connection()
-        if not conn:
-            return []
-        
-        try:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute("""
-                    SELECT r.id_reservation, r.id_user, r.id_train,
-                           u.nom, u.prenom, u.age,
-                           t.train_number, t.source_station_name, t.destination_station_name,
-                           t.departure_time, t.arrival_time, t.distance
-                    FROM reservation r
-                    JOIN utilisateur u ON r.id_user = u.id_user
-                    JOIN train t ON r.id_train = t.id_train
-                    WHERE r.id_user = %s
-                    ORDER BY r.id_reservation
-                """, (user_id,))
-                return cur.fetchall()
-        except psycopg2.Error as e:
-            print(f"Erreur lors de la récupération des réservations: {e}")
-            return []
-        finally:
-            conn.close()
+        return self.execute_query('get_reservations_by_user', (user_id,), fetch_all=True)
     
     def create_reservation(self, user_id, train_id):
         """Crée une nouvelle réservation"""
-        conn = self.get_connection()
-        if not conn:
-            return None
+        # Vérifier si la réservation existe déjà
+        existing = self.execute_query('check_existing_reservation', (user_id, train_id), fetch_one=True)
+        if existing:
+            return None  # Réservation déjà existante
         
-        try:
-            with conn.cursor() as cur:
-                # Vérifier si la réservation existe déjà
-                cur.execute("""
-                    SELECT COUNT(*) 
-                    FROM reservation 
-                    WHERE id_user = %s AND id_train = %s
-                """, (user_id, train_id))
-                
-                if cur.fetchone()[0] > 0:
-                    return None  # Réservation déjà existante
-                
-                cur.execute("""
-                    INSERT INTO reservation (id_user, id_train) 
-                    VALUES (%s, %s) 
-                    RETURNING id_reservation
-                """, (user_id, train_id))
-                reservation_id = cur.fetchone()[0]
-                conn.commit()
-                return reservation_id
-        except psycopg2.Error as e:
-            print(f"Erreur lors de la création de la réservation: {e}")
-            conn.rollback()
-            return None
-        finally:
-            conn.close()
+        # Créer la réservation
+        result = self.execute_query('create_reservation', (user_id, train_id), commit=True)
+        return result is not None
     
     def cancel_reservation(self, reservation_id, user_id):
         """Annule une réservation"""
-        conn = self.get_connection()
-        if not conn:
-            return False
-        
-        try:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    DELETE FROM reservation 
-                    WHERE id_reservation = %s AND id_user = %s
-                """, (reservation_id, user_id))
-                deleted_count = cur.rowcount
-                conn.commit()
-                return deleted_count > 0
-        except psycopg2.Error as e:
-            print(f"Erreur lors de l'annulation de la réservation: {e}")
-            conn.rollback()
-            return False
-        finally:
-            conn.close()
+        result = self.execute_query('cancel_reservation', (reservation_id, user_id), commit=True)
+        return result > 0 if result is not None else False
+
+    def search_trains_by_criteria(self, source_station, destination_station, departure_time=None):
+        """Recherche des trains par critères"""
+        departure_pattern = f"%{departure_time}%" if departure_time else None
+        return self.execute_query('search_trains_by_criteria', 
+                                (f"%{source_station}%", f"%{destination_station}%", 
+                                 departure_pattern, departure_pattern), 
+                                fetch_all=True)
+
+    def get_unique_stations(self):
+        """Récupère toutes les gares uniques"""
+        return self.execute_query('get_unique_stations', fetch_all=True)
+
+    def get_departure_times(self):
+        """Récupère tous les horaires de départ uniques"""
+        return self.execute_query('get_departure_times', fetch_all=True)
     
     def get_available_trains_for_user(self, user_id, source_station=None, destination_station=None):
         """Récupère les trains disponibles pour un utilisateur (non réservés)"""

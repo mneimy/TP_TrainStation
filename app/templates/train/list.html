@@ -8,6 +8,48 @@
     <a href="{{ url_for('train.add_train') }}" class="btn btn-primary">Ajouter un train</a>
 </div>
 
+<!-- Formulaire de recherche -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-search"></i> Rechercher des trains
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            {{ search_form.hidden_tag() }}
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        {{ search_form.source_station.label(class="form-label") }}
+                        {{ search_form.source_station(class="form-select") }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        {{ search_form.destination_station.label(class="form-label") }}
+                        {{ search_form.destination_station(class="form-select") }}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        {{ search_form.departure_time.label(class="form-label") }}
+                        {{ search_form.departure_time(class="form-select") }}
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="mb-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            {{ search_form.submit(class="btn btn-primary") }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% if trains %}
 <div class="row">
     {% for train in trains %}

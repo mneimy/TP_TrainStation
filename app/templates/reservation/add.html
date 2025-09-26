@@ -3,35 +3,154 @@
 {% block title %}Nouvelle Réservation - Gare de Train{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Nouvelle Réservation</h1>
+    <a href="{{ url_for('reservation.list_reservations') }}" class="btn btn-outline-secondary">Mes réservations</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title mb-0">Nouvelle réservation</h3>
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-search"></i> Rechercher un trajet
+                </h5>
             </div>
             <div class="card-body">
                 <form method="POST">
-                    {{ form.hidden_tag() }}
+                    {{ search_form.hidden_tag() }}
                     
                     <div class="mb-3">
-                        {{ form.train_id.label(class="form-label") }}
-                        {{ form.train_id(class="form-control") }}
-                        {% if form.train_id.errors %}
+                        {{ search_form.source_station.label(class="form-label") }}
+                        {{ search_form.source_station(class="form-select") }}
+                        {% if search_form.source_station.errors %}
                             <div class="text-danger">
-                                {% for error in form.train_id.errors %}
+                                {% for error in search_form.source_station.errors %}
                                     <small>{{ error }}</small>
                                 {% endfor %}
                             </div>
                         {% endif %}
                     </div>
                     
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ url_for('reservation.list_reservations') }}" class="btn btn-secondary">Annuler</a>
-                        {{ form.submit(class="btn btn-success") }}
+                    <div class="mb-3">
+                        {{ search_form.destination_station.label(class="form-label") }}
+                        {{ search_form.destination_station(class="form-select") }}
+                        {% if search_form.destination_station.errors %}
+                            <div class="text-danger">
+                                {% for error in search_form.destination_station.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ search_form.departure_time.label(class="form-label") }}
+                        {{ search_form.departure_time(class="form-select") }}
+                        {% if search_form.departure_time.errors %}
+                            <div class="text-danger">
+                                {% for error in search_form.departure_time.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ search_form.submit(class="btn btn-primary") }}
                     </div>
                 </form>
             </div>
         </div>
+    </div>
+    
+    <div class="col-md-8">
+        {% if trains %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-train"></i> Trains disponibles
+                    <span class="badge bg-primary ms-2">{{ trains|length }} résultat(s)</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                {% for train in trains %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="card-title mb-2">
+                                    <i class="fas fa-train text-primary"></i> Train {{ train.train_number }}
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-1">
+                                            <strong><i class="fas fa-map-marker-alt text-success"></i> Départ:</strong><br>
+                                            {{ train.source_station_name }}
+                                        </p>
+                                        {% if train.departure_time %}
+                                        <p class="mb-0">
+                                            <span class="badge bg-success">{{ train.departure_time.strftime('%H:%M') }}</span>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1">
+                                            <strong><i class="fas fa-map-marker-alt text-danger"></i> Arrivée:</strong><br>
+                                            {{ train.destination_station_name }}
+                                        </p>
+                                        {% if train.arrival_time %}
+                                        <p class="mb-0">
+                                            <span class="badge bg-warning text-dark">{{ train.arrival_time.strftime('%H:%M') }}</span>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% if train.distance %}
+                                <p class="mb-0 mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-route"></i> Distance: {{ train.distance }} km
+                                    </small>
+                                </p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <form method="POST" action="{{ url_for('reservation.book_train', train_id=train.id_train) }}" class="d-inline">
+                                    <button type="submit" class="btn btn-primary" 
+                                            onclick="return confirm('Confirmer la réservation du train {{ train.train_number }} ?')">
+                                        <i class="fas fa-ticket-alt"></i> Réserver
+                                    </button>
+                                </form>
+                                <br>
+                                <a href="{{ url_for('train.view_train', train_id=train.id_train) }}" 
+                                   class="btn btn-outline-info btn-sm mt-2">
+                                    <i class="fas fa-info-circle"></i> Détails
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% elif request.method == 'POST' %}
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5>Aucun train trouvé</h5>
+                <p class="text-muted">Aucun train ne correspond à vos critères de recherche.</p>
+                <p class="text-muted">Essayez de modifier vos critères ou de sélectionner "Tous les horaires".</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5>Rechercher un trajet</h5>
+                <p class="text-muted">Sélectionnez une gare de départ, une gare d'arrivée et éventuellement un horaire de départ pour trouver des trains disponibles.</p>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

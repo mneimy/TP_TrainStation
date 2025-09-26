@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ train.train_number }} - Détails du Train{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-train"></i> Train {{ train.train_number }}
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-map-marker-alt text-primary"></i> Gare de Départ</h5>
+                        <p class="mb-3">
+                            <strong>{{ train.source_station_name }}</strong><br>
+                            <small class="text-muted">Code: {{ train.source_station_code }}</small>
+                        </p>
+                        
+                        <h5><i class="fas fa-clock text-success"></i> Heure de Départ</h5>
+                        <p class="mb-3">
+                            {% if train.departure_time %}
+                                <span class="badge bg-success fs-6">{{ train.departure_time.strftime('%H:%M') }}</span>
+                            {% else %}
+                                <span class="text-muted">Non spécifié</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-map-marker-alt text-danger"></i> Gare d'Arrivée</h5>
+                        <p class="mb-3">
+                            <strong>{{ train.destination_station_name }}</strong><br>
+                            <small class="text-muted">Code: {{ train.destination_station_code }}</small>
+                        </p>
+                        
+                        <h5><i class="fas fa-clock text-warning"></i> Heure d'Arrivée</h5>
+                        <p class="mb-3">
+                            {% if train.arrival_time %}
+                                <span class="badge bg-warning text-dark fs-6">{{ train.arrival_time.strftime('%H:%M') }}</span>
+                            {% else %}
+                                <span class="text-muted">Non spécifié</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-route text-info"></i> Distance</h5>
+                        <p>
+                            {% if train.distance %}
+                                <span class="badge bg-info fs-6">{{ train.distance }} km</span>
+                            {% else %}
+                                <span class="text-muted">Non spécifié</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-id-card text-secondary"></i> ID du Train</h5>
+                        <p><code>{{ train.id_train }}</code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-ticket-alt"></i> Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if session.user_id %}
+                    <a href="{{ url_for('reservation.add_reservation') }}?train_id={{ train.id_train }}" 
+                       class="btn btn-primary btn-lg w-100 mb-3">
+                        <i class="fas fa-plus"></i> Réserver ce train
+                    </a>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Vous devez être connecté pour réserver ce train.
+                    </div>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                    </a>
+                {% endif %}
+                
+                <hr>
+                
+                <a href="{{ url_for('train.list_trains') }}" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+        
+        {% if train.departure_time and train.arrival_time %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-stopwatch"></i> Durée du Trajet
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    <span class="badge bg-light text-dark fs-6">
+                        {{ ((train.arrival_time.hour * 60 + train.arrival_time.minute) - (train.departure_time.hour * 60 + train.departure_time.minute)) // 60 }}h 
+                        {{ ((train.arrival_time.hour * 60 + train.arrival_time.minute) - (train.departure_time.hour * 60 + train.departure_time.minute)) % 60 }}min
+                    </span>
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
