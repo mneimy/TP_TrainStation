@@ -6,7 +6,7 @@ from app.database.queries import DatabaseQueries
 
 train_bp = Blueprint('train', __name__)
 
-@train_bp.route('/')
+@train_bp.route('/', methods=['GET', 'POST'])
 def list_trains():
     db_queries = DatabaseQueries()
     search_form = TrainSearchForm()
