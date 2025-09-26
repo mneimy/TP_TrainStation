@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from app import db
 from app.models import Reservation, Train, User
 from app.forms import ReservationForm, ReservationSearchForm
@@ -84,3 +84,25 @@ def cancel_reservation(reservation_id):
         flash('Réservation non trouvée ou erreur lors de l\'annulation.', 'error')
     
     return redirect(url_for('reservation.list_reservations'))
+
+@reservation_bp.route('/api/available-destinations')
+def get_available_destinations():
+    """API endpoint pour récupérer les gares d'arrivée disponibles pour une gare de départ donnée"""
+    source_station = request.args.get('source_station')
+    if not source_station:
+        return jsonify([])
+    
+    db_queries = DatabaseQueries()
+    destinations = db_queries.get_available_destinations(source_station)
+    return jsonify(destinations)
+
+@reservation_bp.route('/api/available-sources')
+def get_available_sources():
+    """API endpoint pour récupérer les gares de départ disponibles pour une gare d'arrivée donnée"""
+    destination_station = request.args.get('destination_station')
+    if not destination_station:
+        return jsonify([])
+    
+    db_queries = DatabaseQueries()
+    sources = db_queries.get_available_sources(destination_station)
+    return jsonify(sources)

@@ -56,6 +56,83 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sourceSelect = document.getElementById('source_station');
+    const destinationSelect = document.getElementById('destination_station');
+    
+    // Fonction pour mettre à jour les destinations
+    function updateDestinations() {
+        const sourceStation = sourceSelect.value;
+        if (sourceStation) {
+            fetch(`/train/api/available-destinations?source_station=${encodeURIComponent(sourceStation)}`)
+                .then(response => response.json())
+                .then(data => {
+                    destinationSelect.innerHTML = '<option value="">Toutes les gares</option>';
+                    data.forEach(station => {
+                        const option = document.createElement('option');
+                        option.value = station.destination_station_name;
+                        option.textContent = station.destination_station_name;
+                        destinationSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erreur:', error));
+        } else {
+            // Réinitialiser avec toutes les gares
+            fetch('/train/api/available-destinations')
+                .then(response => response.json())
+                .then(data => {
+                    destinationSelect.innerHTML = '<option value="">Toutes les gares</option>';
+                    data.forEach(station => {
+                        const option = document.createElement('option');
+                        option.value = station.destination_station_name;
+                        option.textContent = station.destination_station_name;
+                        destinationSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erreur:', error));
+        }
+    }
+    
+    // Fonction pour mettre à jour les sources
+    function updateSources() {
+        const destinationStation = destinationSelect.value;
+        if (destinationStation) {
+            fetch(`/train/api/available-sources?destination_station=${encodeURIComponent(destinationStation)}`)
+                .then(response => response.json())
+                .then(data => {
+                    sourceSelect.innerHTML = '<option value="">Toutes les gares</option>';
+                    data.forEach(station => {
+                        const option = document.createElement('option');
+                        option.value = station.source_station_name;
+                        option.textContent = station.source_station_name;
+                        sourceSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erreur:', error));
+        } else {
+            // Réinitialiser avec toutes les gares
+            fetch('/train/api/available-sources')
+                .then(response => response.json())
+                .then(data => {
+                    sourceSelect.innerHTML = '<option value="">Toutes les gares</option>';
+                    data.forEach(station => {
+                        const option = document.createElement('option');
+                        option.value = station.source_station_name;
+                        option.textContent = station.source_station_name;
+                        sourceSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erreur:', error));
+        }
+    }
+    
+    // Événements
+    sourceSelect.addEventListener('change', updateDestinations);
+    destinationSelect.addEventListener('change', updateSources);
+});
+</script>
+
 {% if trains %}
 <div class="row">
     {% for train in trains %}

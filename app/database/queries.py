@@ -437,6 +437,48 @@ class DatabaseQueries:
             return []
         finally:
             conn.close()
+
+    def get_available_destinations(self, source_station):
+        """Récupère les gares d'arrivée disponibles pour une gare de départ donnée"""
+        conn = self.get_connection()
+        if not conn:
+            return []
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT DISTINCT destination_station_name, destination_station_code
+                    FROM train
+                    WHERE source_station_name = %s
+                    ORDER BY destination_station_name
+                """, (source_station,))
+                return cur.fetchall()
+        except psycopg2.Error as e:
+            print(f"Erreur lors de la récupération des destinations: {e}")
+            return []
+        finally:
+            conn.close()
+
+    def get_available_sources(self, destination_station):
+        """Récupère les gares de départ disponibles pour une gare d'arrivée donnée"""
+        conn = self.get_connection()
+        if not conn:
+            return []
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT DISTINCT source_station_name, source_station_code
+                    FROM train
+                    WHERE destination_station_name = %s
+                    ORDER BY source_station_name
+                """, (destination_station,))
+                return cur.fetchall()
+        except psycopg2.Error as e:
+            print(f"Erreur lors de la récupération des sources: {e}")
+            return []
+        finally:
+            conn.close()
     
     def get_available_trains_for_user(self, user_id, source_station=None, destination_station=None):
         """Récupère les trains disponibles pour un utilisateur (non réservés)"""
