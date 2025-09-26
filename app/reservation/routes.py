@@ -32,15 +32,21 @@ def add_reservation():
     search_form.source_station.choices = [('', 'Sélectionner une gare')] + [(station['station_name'], station['station_name']) for station in stations]
     search_form.destination_station.choices = [('', 'Sélectionner une gare')] + [(station['station_name'], station['station_name']) for station in stations]
     
-    departure_times = db_queries.get_departure_times()
-    search_form.departure_time.choices = [('', 'Tous les horaires')] + [(time['departure_time'].strftime('%H:%M'), time['departure_time'].strftime('%H:%M')) for time in departure_times]
+    # Remplir les listes d'heures et de minutes
+    search_form.departure_hour.choices = [('', 'Heure')] + [(str(i).zfill(2), str(i).zfill(2)) for i in range(24)]
+    search_form.departure_minute.choices = [('', 'Minute')] + [(str(i).zfill(2), str(i).zfill(2)) for i in range(0, 60, 5)]  # Par pas de 5 minutes
     
     trains = []
     if search_form.validate_on_submit():
+        # Construire l'heure de départ si les deux champs sont remplis
+        departure_time = None
+        if search_form.departure_hour.data and search_form.departure_minute.data:
+            departure_time = f"{search_form.departure_hour.data}:{search_form.departure_minute.data}"
+        
         trains = db_queries.search_trains_by_criteria(
             search_form.source_station.data,
             search_form.destination_station.data,
-            search_form.departure_time.data
+            departure_time
         )
     
     return render_template('reservation/add.html', search_form=search_form, trains=trains)

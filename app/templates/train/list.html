@@ -19,25 +19,31 @@
         <form method="POST">
             {{ search_form.hidden_tag() }}
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="mb-3">
                         {{ search_form.source_station.label(class="form-label") }}
                         {{ search_form.source_station(class="form-select") }}
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="mb-3">
                         {{ search_form.destination_station.label(class="form-label") }}
                         {{ search_form.destination_station(class="form-select") }}
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="mb-3">
-                        {{ search_form.departure_time.label(class="form-label") }}
-                        {{ search_form.departure_time(class="form-select") }}
+                        {{ search_form.departure_hour.label(class="form-label") }}
+                        {{ search_form.departure_hour(class="form-select") }}
                     </div>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        {{ search_form.departure_minute.label(class="form-label") }}
+                        {{ search_form.departure_minute(class="form-select") }}
+                    </div>
+                </div>
+                <div class="col-md-2">
                     <div class="mb-3">
                         <label class="form-label">&nbsp;</label>
                         <div class="d-grid">

@@ -44,16 +44,33 @@
                         {% endif %}
                     </div>
                     
-                    <div class="mb-3">
-                        {{ search_form.departure_time.label(class="form-label") }}
-                        {{ search_form.departure_time(class="form-select") }}
-                        {% if search_form.departure_time.errors %}
-                            <div class="text-danger">
-                                {% for error in search_form.departure_time.errors %}
-                                    <small>{{ error }}</small>
-                                {% endfor %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ search_form.departure_hour.label(class="form-label") }}
+                                {{ search_form.departure_hour(class="form-select") }}
+                                {% if search_form.departure_hour.errors %}
+                                    <div class="text-danger">
+                                        {% for error in search_form.departure_hour.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ search_form.departure_minute.label(class="form-label") }}
+                                {{ search_form.departure_minute(class="form-select") }}
+                                {% if search_form.departure_minute.errors %}
+                                    <div class="text-danger">
+                                        {% for error in search_form.departure_minute.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="d-grid">
