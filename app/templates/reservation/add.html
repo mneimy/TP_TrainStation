@@ -133,7 +133,7 @@
                             </div>
                             <div class="col-md-4 text-end">
                                 <form method="POST" action="{{ url_for('reservation.book_train', train_id=train.id_train) }}" class="d-inline">
-                                    {{ csrf_token() }}
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                     <button type="submit" class="btn btn-primary" 
                                             onclick="return confirm('Confirmer la réservation du train {{ train.train_number }} ?')">
                                         <i class="fas fa-ticket-alt"></i> Réserver
