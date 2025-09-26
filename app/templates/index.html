@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Accueil - Gare de Train{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+            <h1 class="display-4">🚂 Bienvenue à la Gare de Train</h1>
+            <p class="lead">Réservez vos billets de train en toute simplicité</p>
+            <hr class="my-4">
+            <p>Découvrez nos trains, consultez les horaires et réservez votre place en quelques clics.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a class="btn btn-light btn-lg" href="{{ url_for('train.list_trains') }}" role="button">Voir les trains</a>
+                {% if not session.user_id %}
+                <a class="btn btn-outline-light btn-lg" href="{{ url_for('auth.register') }}" role="button">S'inscrire</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Accès rapide</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('train.list_trains') }}" class="btn btn-outline-primary">Consulter les trains</a>
+                    {% if session.user_id %}
+                    <a href="{{ url_for('reservation.add_reservation') }}" class="btn btn-outline-success">Faire une réservation</a>
+                    <a href="{{ url_for('reservation.list_reservations') }}" class="btn btn-outline-info">Mes réservations</a>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-success">Se connecter</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-info">S'inscrire</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">🔍 Rechercher</h3>
+                <p class="card-text">Trouvez le train qui correspond à vos besoins en consultant notre liste complète.</p>
+                <a href="{{ url_for('train.list_trains') }}" class="btn btn-primary">Rechercher</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">🎫 Réserver</h3>
+                <p class="card-text">Réservez votre place en quelques clics. Simple, rapide et sécurisé.</p>
+                {% if session.user_id %}
+                <a href="{{ url_for('reservation.add_reservation') }}" class="btn btn-success">Réserver</a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-success">Se connecter</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">📋 Gérer</h3>
+                <p class="card-text">Consultez et gérez vos réservations à tout moment.</p>
+                {% if session.user_id %}
+                <a href="{{ url_for('reservation.list_reservations') }}" class="btn btn-info">Mes réservations</a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-info">Se connecter</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Liste des Trains - Gare de Train{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Liste des Trains</h1>
+    <a href="{{ url_for('train.add_train') }}" class="btn btn-primary">Ajouter un train</a>
+</div>
+
+{% if trains %}
+<div class="row">
+    {% for train in trains %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Train {{ train.train_number }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    <strong>Départ :</strong> {{ train.source_station_name or 'N/A' }}<br>
+                    <strong>Arrivée :</strong> {{ train.destination_station_name or 'N/A' }}<br>
+                    {% if train.departure_time %}
+                    <strong>Heure départ :</strong> {{ train.departure_time.strftime('%H:%M') }}<br>
+                    {% endif %}
+                    {% if train.arrival_time %}
+                    <strong>Heure arrivée :</strong> {{ train.arrival_time.strftime('%H:%M') }}<br>
+                    {% endif %}
+                    {% if train.distance %}
+                    <strong>Distance :</strong> {{ train.distance }} km<br>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="card-footer">
+                <div class="btn-group w-100" role="group">
+                    <a href="{{ url_for('train.view_train', train_id=train.id_train) }}" class="btn btn-outline-primary btn-sm">Voir</a>
+                    <a href="{{ url_for('train.edit_train', train_id=train.id_train) }}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+                    <form method="POST" action="{{ url_for('train.delete_train', train_id=train.id_train) }}" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce train ?')">Supprimer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <h4>Aucun train disponible</h4>
+    <p>Il n'y a actuellement aucun train dans la base de données.</p>
+    <a href="{{ url_for('train.add_train') }}" class="btn btn-primary">Ajouter le premier train</a>
+</div>
+{% endif %}
+{% endblock %}

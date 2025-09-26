@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de bord - Gare de Train{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Tableau de bord</h1>
+        <p class="lead">Bienvenue {{ session.user_name }} ! Gérez vos réservations et explorez nos services.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Actions rapides</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('reservation.add_reservation') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Nouvelle réservation
+                    </a>
+                    <a href="{{ url_for('reservation.list_reservations') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-list"></i> Mes réservations
+                    </a>
+                    <a href="{{ url_for('train.list_trains') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-train-front"></i> Consulter les trains
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Informations</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Nom d'utilisateur :</strong> {{ session.user_name }}</p>
+                <p><strong>Statut :</strong> Connecté</p>
+                <p><strong>Dernière connexion :</strong> Maintenant</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

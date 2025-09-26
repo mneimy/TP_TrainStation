@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Ajouter un Train - Gare de Train{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Ajouter un nouveau train</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.train_number.label(class="form-label") }}
+                                {{ form.train_number(class="form-control") }}
+                                {% if form.train_number.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.train_number.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.distance.label(class="form-label") }}
+                                {{ form.distance(class="form-control") }}
+                                {% if form.distance.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.distance.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.source_station_code.label(class="form-label") }}
+                                {{ form.source_station_code(class="form-control") }}
+                                {% if form.source_station_code.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.source_station_code.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.destination_station_code.label(class="form-label") }}
+                                {{ form.destination_station_code(class="form-control") }}
+                                {% if form.destination_station_code.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.destination_station_code.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.source_station_name.label(class="form-label") }}
+                                {{ form.source_station_name(class="form-control") }}
+                                {% if form.source_station_name.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.source_station_name.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.destination_station_name.label(class="form-label") }}
+                                {{ form.destination_station_name(class="form-control") }}
+                                {% if form.destination_station_name.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.destination_station_name.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.departure_time.label(class="form-label") }}
+                                {{ form.departure_time(class="form-control") }}
+                                {% if form.departure_time.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.departure_time.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.arrival_time.label(class="form-label") }}
+                                {{ form.arrival_time(class="form-control") }}
+                                {% if form.arrival_time.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.arrival_time.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('train.list_trains') }}" class="btn btn-secondary">Annuler</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,224 @@
+# Fichiers sensibles et configuration
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+config.env
+.env.development
+.env.test
+
+# Base de données
+*.db
+*.sqlite
+*.sqlite3
+trainstation.db
+
+# Logs
+*.log
+logs/
+log/
+
+# Fichiers Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Environnements virtuels
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+prod/
+.venv/
+
+# IDE et éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Fichiers de test et temporaires
+test_*.py
+*_test.py
+demo_*.py
+temp/
+tmp/
+
+# Fichiers de configuration sensibles
+secrets.py
+config_secret.py
+database_config.py
+
+# Fichiers de sauvegarde
+*.bak
+*.backup
+*.old
+
+# Fichiers de cache
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Fichiers de déploiement
+deploy/
+deployment/
+*.pem
+*.key
+*.crt
+
+# Fichiers de documentation générés
+docs/_build/
+site/
+
+# Fichiers de données sensibles
+data/
+datasets/
+*.csv
+*.json
+*.xml
+
+# Fichiers de session
+sessions/
+flask_session/
+
+# Fichiers de migration (si vous utilisez Alembic)
+migrations/versions/*.py
+!migrations/versions/__init__.py
+
+# Fichiers de configuration spécifiques à l'environnement
+config_local.py
+config_dev.py
+config_prod.py
+
+# Fichiers de logs d'application
+app.log
+error.log
+access.log
+debug.log
+
+# Fichiers de base de données de test
+test.db
+test_*.db
+
+# Fichiers de configuration Docker
+docker-compose.override.yml
+.dockerignore
+
+# Fichiers de configuration Nginx
+nginx.conf.local
+
+# Fichiers de configuration Apache
+.htaccess.local
+
+# Fichiers de configuration SSL
+ssl/
+certs/
+
+# Fichiers de configuration de base de données
+postgres_config.py
+database_setup.py
+
+# Fichiers de scripts d'import/export
+import_*.py
+export_*.py
+*_import.py
+*_export.py
+
+# Fichiers de scripts de test
+test_postgres_connection.py
+import_test_users.py
+create_test_reservations.py
+demo_application.py
+postgres_config.py
+
+# Fichiers de configuration de production
+production_config.py
+prod_config.py
+
+# Fichiers de secrets et clés
+.secrets
+secrets.json
+keys.json
+api_keys.json
+
+# Fichiers de configuration de monitoring
+monitoring_config.py
+metrics_config.py
+
+# Fichiers de configuration de cache
+cache_config.py
+redis_config.py
+
+# Fichiers de configuration de queue
+queue_config.py
+celery_config.py
+
+# Fichiers de configuration de stockage
+storage_config.py
+s3_config.py
+
+# Fichiers de configuration d'email
+email_config.py
+smtp_config.py
+
+# Fichiers de configuration de notification
+notification_config.py
+push_config.py
+
+# Fichiers de configuration d'authentification
+auth_config.py
+jwt_config.py
+
+# Fichiers de configuration de sécurité
+security_config.py
+cors_config.py
+
+# Fichiers de configuration de logging
+logging_config.py
+log_config.py
+
+# Fichiers de configuration de performance
+performance_config.py
+optimization_config.py
+
+# Fichiers de configuration de test
+test_config.py
+testing_config.py
+
+# Fichiers de configuration de développement
+dev_config.py
+development_config.py
+
+# Fichiers de configuration de staging
+staging_config.py
+stage_config.py
+
+# Fichiers de configuration de local
+local_config.py
+localhost_config.py

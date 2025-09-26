@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Réservations - Gare de Train{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Mes Réservations</h1>
+    <a href="{{ url_for('reservation.add_reservation') }}" class="btn btn-primary">Nouvelle réservation</a>
+</div>
+
+{% if reservations %}
+<div class="row">
+    {% for reservation in reservations %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Réservation #{{ reservation.id_reservation }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    <strong>Train :</strong> {{ reservation.train_number }}<br>
+                    <strong>Départ :</strong> {{ reservation.source_station_name or 'N/A' }}<br>
+                    <strong>Arrivée :</strong> {{ reservation.destination_station_name or 'N/A' }}<br>
+                    {% if reservation.departure_time %}
+                    <strong>Heure départ :</strong> {{ reservation.departure_time.strftime('%H:%M') }}<br>
+                    {% endif %}
+                    {% if reservation.arrival_time %}
+                    <strong>Heure arrivée :</strong> {{ reservation.arrival_time.strftime('%H:%M') }}<br>
+                    {% endif %}
+                    {% if reservation.distance %}
+                    <strong>Distance :</strong> {{ reservation.distance }} km<br>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="card-footer">
+                <form method="POST" action="{{ url_for('reservation.cancel_reservation', reservation_id=reservation.id_reservation) }}" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')">
+                        Annuler la réservation
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <h4>Aucune réservation</h4>
+    <p>Vous n'avez actuellement aucune réservation.</p>
+    <a href="{{ url_for('reservation.add_reservation') }}" class="btn btn-primary">Faire une réservation</a>
+</div>
+{% endif %}
+{% endblock %}
