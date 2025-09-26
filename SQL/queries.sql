@@ -170,6 +170,19 @@ DELETE FROM reservation WHERE id_reservation = %s;
 DELETE FROM reservation 
 WHERE id_reservation = %s AND id_user = %s;
 
+-- name: get_reservations_by_user
+-- Récupérer les réservations d'un utilisateur spécifique
+-- Paramètres: id_user
+SELECT r.id_reservation, r.id_user, r.id_train,
+       u.nom, u.prenom, u.age,
+       t.train_number, t.source_station_name, t.destination_station_name,
+       t.departure_time, t.arrival_time, t.distance
+FROM reservation r
+JOIN utilisateur u ON r.id_user = u.id_user
+JOIN train t ON r.id_train = t.id_train
+WHERE r.id_user = %s
+ORDER BY r.id_reservation DESC;
+
 -- Récupérer toutes les réservations (avec pagination)
 -- Paramètres: limit, offset
 SELECT r.id_reservation, r.id_user, r.id_train,
