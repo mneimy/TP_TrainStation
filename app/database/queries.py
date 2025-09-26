@@ -29,6 +29,67 @@ class DatabaseQueries:
             print(f"Erreur de connexion à PostgreSQL: {e}")
             return None
     
+    def execute_query(self, query_name, params=None, fetch_one=False, fetch_all=False, commit=False):
+        """Exécute une requête SQL sécurisée"""
+        conn = self.get_connection()
+        if not conn:
+            return None
+
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                # Charger la requête depuis le fichier SQL
+                query = self._load_query(query_name)
+                if not query:
+                    raise ValueError(f"Query '{query_name}' not found")
+                
+                cur.execute(query, params or ())
+                
+                if commit:
+                    conn.commit()
+                    return cur.rowcount
+                elif fetch_one:
+                    return cur.fetchone()
+                elif fetch_all:
+                    return cur.fetchall()
+                else:
+                    return None
+        except psycopg2.Error as e:
+            print(f"Erreur lors de l'exécution de la requête '{query_name}': {e}")
+            conn.rollback()
+            return None
+        finally:
+            conn.close()
+    
+    def _load_query(self, query_name):
+        """Charge une requête depuis le fichier SQL/queries.sql"""
+        import os
+        queries_path = os.path.join(os.path.dirname(__file__), '..', '..', 'SQL', 'queries.sql')
+        
+        try:
+            with open(queries_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            queries = {}
+            current_query_name = None
+            current_query_lines = []
+
+            for line in content.splitlines():
+                if line.startswith('-- name:'):
+                    if current_query_name and current_query_lines:
+                        queries[current_query_name.strip()] = "\n".join(current_query_lines).strip()
+                    current_query_name = line.split(':', 1)[1].strip()
+                    current_query_lines = []
+                elif current_query_name and line.strip():
+                    current_query_lines.append(line)
+            
+            if current_query_name and current_query_lines:
+                queries[current_query_name.strip()] = "\n".join(current_query_lines).strip()
+            
+            return queries.get(query_name)
+        except Exception as e:
+            print(f"Erreur lors du chargement de la requête '{query_name}': {e}")
+            return None
+    
     # ===========================================
     # REQUÊTES UTILISATEURS
     # ===========================================
@@ -225,39 +286,157 @@ class DatabaseQueries:
     
     def get_user_reservations(self, user_id):
         """Récupère les réservations d'un utilisateur"""
-        return self.execute_query('get_reservations_by_user', (user_id,), fetch_all=True)
+        conn = self.get_connection()
+        if not conn:
+            return []
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT r.id_reservation, r.id_user, r.id_train,
+                           u.nom, u.prenom, u.age,
+                           t.train_number, t.source_station_name, t.destination_station_name,
+                           t.departure_time, t.arrival_time, t.distance
+                    FROM reservation r
+                    JOIN utilisateur u ON r.id_user = u.id_user
+                    JOIN train t ON r.id_train = t.id_train
+                    WHERE r.id_user = %s
+                    ORDER BY r.id_reservation DESC
+                """, (user_id,))
+                return cur.fetchall()
+        except psycopg2.Error as e:
+            print(f"Erreur lors de la récupération des réservations: {e}")
+            return []
+        finally:
+            conn.close()
     
     def create_reservation(self, user_id, train_id):
         """Crée une nouvelle réservation"""
-        # Vérifier si la réservation existe déjà
-        existing = self.execute_query('check_existing_reservation', (user_id, train_id), fetch_one=True)
-        if existing:
-            return None  # Réservation déjà existante
+        conn = self.get_connection()
+        if not conn:
+            return False
         
-        # Créer la réservation
-        result = self.execute_query('create_reservation', (user_id, train_id), commit=True)
-        return result is not None
+        try:
+            with conn.cursor() as cur:
+                # Vérifier si la réservation existe déjà
+                cur.execute("""
+                    SELECT COUNT(*) 
+                    FROM reservation 
+                    WHERE id_user = %s AND id_train = %s
+                """, (user_id, train_id))
+                
+                if cur.fetchone()[0] > 0:
+                    return False  # Réservation déjà existante
+                
+                cur.execute("""
+                    INSERT INTO reservation (id_user, id_train) 
+                    VALUES (%s, %s)
+                """, (user_id, train_id))
+                conn.commit()
+                return True
+        except psycopg2.Error as e:
+            print(f"Erreur lors de la création de la réservation: {e}")
+            conn.rollback()
+            return False
+        finally:
+            conn.close()
     
     def cancel_reservation(self, reservation_id, user_id):
         """Annule une réservation"""
-        result = self.execute_query('cancel_reservation', (reservation_id, user_id), commit=True)
-        return result > 0 if result is not None else False
+        conn = self.get_connection()
+        if not conn:
+            return False
+        
+        try:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    DELETE FROM reservation 
+                    WHERE id_reservation = %s AND id_user = %s
+                """, (reservation_id, user_id))
+                deleted_count = cur.rowcount
+                conn.commit()
+                return deleted_count > 0
+        except psycopg2.Error as e:
+            print(f"Erreur lors de l'annulation de la réservation: {e}")
+            conn.rollback()
+            return False
+        finally:
+            conn.close()
 
     def search_trains_by_criteria(self, source_station, destination_station, departure_time=None):
         """Recherche des trains par critères"""
-        departure_pattern = f"%{departure_time}%" if departure_time else None
-        return self.execute_query('search_trains_by_criteria', 
-                                (f"%{source_station}%", f"%{destination_station}%", 
-                                 departure_pattern, departure_pattern), 
-                                fetch_all=True)
+        conn = self.get_connection()
+        if not conn:
+            return []
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                departure_pattern = f"%{departure_time}%" if departure_time else None
+                cur.execute("""
+                    SELECT DISTINCT t.id_train, t.train_number, t.source_station_name, t.destination_station_name, 
+                           t.departure_time, t.arrival_time, t.distance
+                    FROM train t
+                    WHERE t.source_station_name ILIKE %s
+                      AND t.destination_station_name ILIKE %s
+                      AND (t.departure_time::text LIKE %s OR %s IS NULL)
+                    ORDER BY t.departure_time
+                """, (f"%{source_station}%", f"%{destination_station}%", 
+                      departure_pattern, departure_pattern))
+                return cur.fetchall()
+        except psycopg2.Error as e:
+            print(f"Erreur lors de la recherche de trains: {e}")
+            return []
+        finally:
+            conn.close()
 
     def get_unique_stations(self):
         """Récupère toutes les gares uniques"""
-        return self.execute_query('get_unique_stations', fetch_all=True)
+        conn = self.get_connection()
+        if not conn:
+            return []
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT DISTINCT station_name, station_code
+                    FROM (
+                        SELECT source_station_name as station_name, source_station_code as station_code
+                        FROM train
+                        WHERE source_station_name IS NOT NULL
+                        UNION
+                        SELECT destination_station_name as station_name, destination_station_code as station_code
+                        FROM train
+                        WHERE destination_station_name IS NOT NULL
+                    ) stations
+                    ORDER BY station_name
+                """)
+                return cur.fetchall()
+        except psycopg2.Error as e:
+            print(f"Erreur lors de la récupération des gares: {e}")
+            return []
+        finally:
+            conn.close()
 
     def get_departure_times(self):
         """Récupère tous les horaires de départ uniques"""
-        return self.execute_query('get_departure_times', fetch_all=True)
+        conn = self.get_connection()
+        if not conn:
+            return []
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT DISTINCT departure_time
+                    FROM train
+                    WHERE departure_time IS NOT NULL
+                    ORDER BY departure_time
+                """)
+                return cur.fetchall()
+        except psycopg2.Error as e:
+            print(f"Erreur lors de la récupération des horaires: {e}")
+            return []
+        finally:
+            conn.close()
     
     def get_available_trains_for_user(self, user_id, source_station=None, destination_station=None):
         """Récupère les trains disponibles pour un utilisateur (non réservés)"""
